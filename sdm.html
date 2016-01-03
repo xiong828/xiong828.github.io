@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+	<head>
+        <meta content="text/html;charset=utf-8" http-equiv="Content-Type"> 
+        <link rel="icon" type="image/png" href="pics/logo4.png"/>
+    	<link type="text/css" rel="stylesheet" href="stylesheet.css"/>
+        <script src="myscript.js"></script>
+				<script type="text/x-mathjax-config">
+					MathJax.Hub.Config({
+						extensions: ["tex2jax.js"],
+						jax: ["input/TeX", "output/HTML-CSS"],
+						tex2jax: {
+							inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+							displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+							processEscapes: true
+						},
+						"HTML-CSS": { availableFonts: ["TeX"] }
+					});
+				</script>
+
+				<script type="text/javascript"
+			   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js">
+				</script>
+
+    	<title>Xuehan's Homepage</title>
+  	</head>
+
+  	<body>
+		<div id="page-wrap">
+			<div id="header">
+                <img id="header-img" src="pics/X-Men_Logo.png">
+			</div>
+
+			<div id="navbar">
+				<ul id="nav-ul">
+					<li class="navbar-li"><a class="navlink" href="index.html">HOME</a></li>	
+					<li class="navbar-li"><a class="navlink" href="pub.html">PUBLICATION</a></li>
+					<li class="navbar-li"><a class="navlink" href="sdm.html">SDM</a></li>
+					<li class="navbar-li"><a class="navlink" href="contact.html">CONTACT</a></li>
+				</ul>
+			</div>
+
+		\(
+		\def\R{\mathbf{R}}
+		\def\I{\mathbf{I}}
+		\def\H{\mathbf{H}}
+		\def\A{\mathbf{A}}
+		\def\J{\mathbf{J}}
+		\def\x{\mathbf{x}}
+		\def\y{\mathbf{y}}
+		\def\h{\mathbf{h}}
+		\) 
+			<div class="content">
+				<p>
+				SDM is short for <em>Supervised Descent Method</em>. The original paper of SDM is published in CVPR 2013. Since then, I have explored several extensions of it, such as online SDM, global SDM. Also, I have spent some time on investigating its theoretical properties and applied it to other applications. The theoretical and experimental findings are submitted to TPAMI. 
+				</p>	
+				<p>
+				Originally, I developed SDM to optimize <em>Nonlinear Least Squares (NLS)</em> objectives. Here is a simple example illustrating how it differs from the traditional gradient-based methods. Optimization is like climbing a hill. Fig1. shows a "real-world" example of applying gradient-based methods to climb a hill. Alternatively, to reach the peak faster one can take a cable car (shown in Fig.2) although it takes the fun out of hiking. SDM proposes an offline procedure that builds the stationary ropes that carry the cable cars so in testing time the climb will be smooth and quick. Readers, please do not take it too literal, this example is supposed to only give you an intuition. 
+				</p>
+				<table> 
+      	<tr>
+        <td width="45%" valign="top">
+					<figure>
+        	<img src="pics/gradient-methods.jpg" width=100% border="0">
+					<figcaption>Fig1. How to climb a mountain with Gradient ascent.</figcaption>
+					</figure>
+      	</td>
+        <td width="45%" valign="top">
+					<figure>
+        	<img src="pics/sdm-fun.jpg" width=100% border="0">
+					<figcaption>Fig2. How to climb a mountain with SDM.</figcaption>
+					</figure>
+      	</td>
+				</table>
+				<p>
+				Let us switch to the mathematical world. Say we want to minimize the following NLS function:
+			 	$$
+				f(\x) = \min_\x \|\h(\x)-\y\|^2,
+				$$	 
+				where $\x$ is the optimizing parameters, $\h$ is a nonlinear function, and $\y$ is a known vector. 
+				Below is the update equation from gradient-based methods:
+				$$
+				\Delta x = \alpha\A\J^\top_\h(\x)(\h(\x)-\y),
+				$$
+				where $\alpha$ is the step size, $\A$ is a rescaling factor, and $\J_\h$ is the Jacobian of $\h$ evaluated at the current parameter estimate $\x$. Different methods vary representation of $\A$. For example, $\A=\H^{-1}$ in Newton's method, $\A=(\J^\top\J)^{-1}$ in Gauss-Newton, $\A=\I$ in first-order methods. For non-differentiable functions, $\A$ and $\J$ are expensive to compute (e.g., one needs to use finite differences to approximate the Jacobian).
+				<p>
+				The main idea behind SDM is to replace this expensive term $\alpha\A\J_\h$ with a learned matrix $\R$. For now, you can think of $\R$ as the rope in the above example in Fig.2. In this paper, we defined $\R$ as <em>Generic Descent Map (DM)</em> and derived the conditions under which $\R$ can drive all samples to the global optimal solution.
+				</p>
+				<p>
+				Recently, I have found another iterpretation of SDM as a policy learning algorithm, thanks to Drew. the state observation becomes this error $\h(\x)-\y$, action parameter update $\Delta\x$, the DM can be policy that maps state observation to the action. 
+				gradient-based methods $\alpha\A\J_\h$ can also be seen as a optimization policy, this policy has to be derived online (e.g., the Jacobians need to be evaluated at the current parameter). 
+				</p>	
+      </div>
+		</div>
+  	</body>
+
+
+</html>
+
+
