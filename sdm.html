@@ -51,11 +51,12 @@
 		\def\h{\mathbf{h}}
 		\) 
 			<div class="content">
+				<h2>Introduction</h2>
 				<p>
-				SDM is short for <em>Supervised Descent Method</em>. The original paper of SDM is published in CVPR 2013. Since then, I have explored several extensions of it, such as online SDM, global SDM. Also, I have spent some time on investigating its theoretical properties and applied it to other applications. The theoretical and experimental findings are submitted to TPAMI. 
+				SDM is short for <em>Supervised Descent Method</em>. The <a href="http://www.ri.cmu.edu/pub_files/2013/5/main.pdf">original paper</a> of SDM is published in CVPR 2013. Since then, I have explored several extensions of it, such as online SDM, global SDM. Also, I have spent some time on investigating its theoretical properties and applied it to other applications. The theoretical and experimental findings are submitted to TPAMI. 
 				</p>	
 				<p>
-				Originally, I developed SDM to optimize <em>Nonlinear Least Squares (NLS)</em> objectives. Here is a simple example illustrating how it differs from the traditional gradient-based methods. Optimization is like climbing a hill. Fig1. shows a "real-world" example of applying gradient-based methods to climb a hill. Alternatively, to reach the peak faster one can take a cable car (shown in Fig.2) although it takes the fun out of hiking. SDM proposes an offline procedure that builds the stationary ropes that carry the cable cars so in testing time the climb will be smooth and quick. Readers, please do not take it too literal, this example is supposed to only give you an intuition. 
+				Originally, I developed SDM to optimize <a href="http://en.wikipedia.org/wiki/Non-linear_least_squares"><em>Nonlinear Least Squares (NLS)</em></a> objectives. Here is a simple example illustrating how it differs from the traditional gradient-based methods. Optimization is like climbing a hill. Fig1. shows a "real-world" example of applying gradient-based methods to climb a hill. Alternatively, to reach the peak faster one can take a cable car (shown in Fig.2) although it takes the fun out of hiking. SDM proposes an offline procedure that builds the stationary ropes that carry the cable cars so in testing time the climb will be smooth and quick. Readers, please do not take it too literal, this example is supposed to only give you an intuition. 
 				</p>
 				<table> 
       	<tr>
@@ -72,6 +73,8 @@
 					</figure>
       	</td>
 				</table>
+
+				<h2>Descent Map I</h2>
 				<p>
 				Let us switch to the mathematical world. Say we want to minimize the following NLS function:
 			 	$$
@@ -82,14 +85,25 @@
 				$$
 				\Delta x = \alpha\A\J^\top_\h(\x)(\h(\x)-\y),
 				$$
-				where $\alpha$ is the step size, $\A$ is a rescaling factor, and $\J_\h$ is the Jacobian of $\h$ evaluated at the current parameter estimate $\x$. Different methods vary representation of $\A$. For example, $\A=\H^{-1}$ in Newton's method, $\A=(\J^\top\J)^{-1}$ in Gauss-Newton, $\A=\I$ in first-order methods. For non-differentiable functions, $\A$ and $\J$ are expensive to compute (e.g., one needs to use finite differences to approximate the Jacobian).
+				where $\alpha$ is the step size, $\A$ is a rescaling factor, and $\J_\h$ is the <a href="http://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant">Jacobian</a> of $\h$ evaluated at the current parameter estimate $\x$. Different methods vary representation of $\A$. For example, $\A=\H^{-1}$ in <a href="http://en.wikipedia.org/wiki/Newton%27s_method_in_optimization">Newton's method</a>, $\A=(\J^\top\J)^{-1}$ in <a href="http://en.wikipedia.org/wiki/Gauss%E2%80%93Newton_algorithm">Gauss-Newton</a>, $\A=\I$ in first-order methods. For non-differentiable functions, $\A$ and $\J$ are expensive to compute (e.g., one needs to use <a href="http://en.wikipedia.org/wiki/Finite_difference">finite differences</a> to approximate the Jacobian).
 				<p>
-				The main idea behind SDM is to replace this expensive term $\alpha\A\J_\h$ with a learned matrix $\R$. For now, you can think of $\R$ as the rope in the above example in Fig.2. In this paper, we defined $\R$ as <em>Generic Descent Map (DM)</em> and derived the conditions under which $\R$ can drive all samples to the global optimal solution.
+				The main idea behind SDM is to replace this expensive term $\alpha\A\J_\h$ with a learned matrix $\R$. For now, you can think of $\R$ as the rope in the above example in Fig.2. In <a href="http://arxiv.org/pdf/1405.0601.pdf">this paper</a>, we formally defined $\R$ as <em>Generic Descent Map (DM)</em> and derived the conditions under which $\R$ can drive all samples to the global optimal solution. </p>
+				<p> 
+				SDM is an iterative algorithm that leans a sequence of DMs. Below, the animation shows a simple example of how SDM learns a sequence of DMs from the optimal trajectories (indicated by the dotted lines).
 				</p>
-				<p>
-				Recently, I have found another iterpretation of SDM as a policy learning algorithm, thanks to Drew. the state observation becomes this error $\h(\x)-\y$, action parameter update $\Delta\x$, the DM can be policy that maps state observation to the action. 
-				gradient-based methods $\alpha\A\J_\h$ can also be seen as a optimization policy, this policy has to be derived online (e.g., the Jacobians need to be evaluated at the current parameter). 
+				<figure align="middle">
+					<img src="pics/sdm-animation-all.gif" width=50% border="0"> 
+					<figcaption>Fig3. SDM learns a sequence of DMs.</figcaption>
+				</figure>
+				<h2>Descent Map II</h2>
+				<p>Recently, I have found another interpretation of DM, thanks to <a href="http://www.ri.cmu.edu/person.html?person_id=689">Drew</a>. If you are from a Robotics background, you may find this interpretation easier to understand. SDM tackles NLS problems from an Imitation Learning perspective by learning a sequence of optimization policies. Fig.4 shows the execution of descent policies learned following SDM.</p> 
+				<p>Within this context, the state observation becomes this error $\h(\x)-\y$, the action corresponds to parameter update $\Delta\x$, and the DM can be seen as the policy that maps state observation to the action. The World is problem-specific and can be thought as the environment where you make your predictions. In many computer vision problems, the World is the input image so the environment is stationary.</p>
+				<p>Gradient-based methods can also be explained in the same framework. Recall that we use DM to replace this term, $\alpha\A\J_\h$ that can be seen as an optimization policy. However, this policy has to be derived online (e.g., the Jacobians need to be evaluated at the current parameter). 
 				</p>	
+				<figure align="middle">
+        	<img src="pics/policy.gif" width=50% border="0"> 
+					<figcaption>Fig4. Descent policy execution.</figcaption>
+				</figure>
       </div>
 		</div>
   	</body>
